@@ -1,0 +1,7 @@
+.git
+.sdk
+.data
+bin
+*.exe
+**/__pycache__
+

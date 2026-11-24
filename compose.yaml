@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: finslet
+      POSTGRES_USER: finslet
+      POSTGRES_PASSWORD: demo-local
+    volumes:
+      - ledger:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finslet"]
+      interval: 2s
+      timeout: 2s
+      retries: 25
+  opa:
+    image: openpolicyagent/opa:1.9.0
+    command: ["run", "--server", "--addr=0.0.0.0:8181", "/policy/controls.rego"]
+    volumes:
+      - ./policy/controls.rego:/policy/controls.rego:ro
+  zen:
+    build: ./policy
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgres://finslet:demo-local@db:5432/finslet?sslmode=disable
+      OPA_URL: http://opa:8181/v1/data/finslet/decision
+      ZEN_URL: http://zen:8182/evaluate
+      FINSLET_ADDR: 0.0.0.0:8090
+    ports: ["127.0.0.1:8090:8090"]
+    depends_on:
+      db:
+        condition: service_healthy
+      opa:
+        condition: service_started
+      zen:
+        condition: service_started
+volumes:
+  ledger: {}

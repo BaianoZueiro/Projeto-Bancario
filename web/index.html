@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Finslet · Central antifraude</title><link rel="stylesheet" href="/style.css">
+<header><div class="wrap bar"><strong class="brand"><b>ƒ</b> Finslet</strong><nav><a href="#simulador">Simulador</a><a href="#historico">Auditoria</a><a href="#monitor">NOC / SOC</a></nav><span class="env">Ambiente acadêmico</span></div></header>
+<main class="wrap"><div class="intro"><div><small>OPERAÇÕES FINANCEIRAS</small><h1>Central antifraude</h1><p>Simule um pagamento e acompanhe a decisão, as regras e o efeito no saldo.</p></div><span id="connection" role="status">Conectando…</span></div>
+<section id="metrics" class="metrics" aria-label="Indicadores"></section>
+<div class="columns"><section id="simulador" class="card"><h2>Simular operação</h2><form id="form">
+<label>Cenário de demonstração<select id="scenario"></select></label>
+<div class="pair"><label>Cliente<select id="client"><option>Ana</option><option>Bruno</option><option>Carla</option><option>Davi</option></select></label><label>Modalidade<select id="product"><option value="pix">Transferência Pix</option><option value="cartao">Cartão</option></select></label></div>
+<div class="pair"><label>Valor (R$)<input id="amount" type="number" step=".01" min=".01" max="10000000" required></label><label>Destino fictício<input id="destination" required pattern="[a-zA-Z0-9_-]{1,80}"></label></div>
+<details><summary>Ajustar sinais e gateway</summary><div id="checks"></div><label>Resposta do gateway<select id="gateway"><option value="sucesso">Confirmada</option><option value="timeout">Resposta tardia</option><option value="falha">Recusada</option></select></label></details>
+<button id="submit">Executar cenário</button></form>
+<p id="status" role="status" aria-live="polite"></p><button class="secondary" id="retry" hidden>Reenviar a última solicitação</button></section>
+<section class="card ledger"><h2>Contas de demonstração</h2><div id="accounts"></div><div id="decision" aria-live="polite"></div></section></div>
+<section class="card" id="historico"><h2>Auditoria de transações</h2><p>Selecione uma operação para consultar a regra, reconciliar ou abrir contestação.</p><div class="scroll"><table><thead><tr><th>Horário</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Decisão</th><th>Auditoria</th></tr></thead><tbody id="history"></tbody></table></div></section>
+<section class="card" id="monitor"><h2>Monitoramento NOC / SOC</h2><p id="health"></p><div class="actions"><button class="secondary" id="siem">Pausar entrega ao SIEM</button><button class="secondary" id="policy">Testar permissão de política</button></div><h3>Eventos entregues ao SOC</h3><div id="events"></div></section>
+<footer>Finslet · Laboratório de paradigmas de programação</footer></main>
+<dialog id="detail"><button id="close" class="secondary">Fechar</button><h2>Detalhes da operação</h2><div id="inspection"></div><div class="actions"><button id="resolve">Consultar recibo do gateway</button></div><form id="dispute"><label>Motivo da contestação<input id="note" minlength="3" maxlength="300" required></label><button class="secondary">Registrar contestação</button></form><p id="detailStatus" role="status"></p></dialog>
+<script src="/app.js"></script></html>

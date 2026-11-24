@@ -1,0 +1,120 @@
+{
+  "contentType": "application/vnd.gorules.decision",
+  "nodes": [
+    {
+      "id": "in",
+      "type": "inputNode",
+      "name": "Contexto",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "risk",
+      "name": "Avaliar sinais",
+      "type": "decisionTableNode",
+      "position": {
+        "x": 250,
+        "y": 0
+      },
+      "content": {
+        "hitPolicy": "first",
+        "inputs": [
+          {
+            "id": "cardFrequency",
+            "name": "cardFrequency",
+            "field": "cardFrequency"
+          },
+          {
+            "id": "pixSequence",
+            "name": "pixSequence",
+            "field": "pixSequence"
+          },
+          {
+            "id": "atypicalNew",
+            "name": "atypicalNew",
+            "field": "atypicalNew"
+          },
+          {
+            "id": "regionNew",
+            "name": "regionNew",
+            "field": "regionNew"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "reason",
+            "name": "Motivo",
+            "field": "reason"
+          }
+        ],
+        "rules": [
+          {
+            "_id": "cardFrequency",
+            "cardFrequency": "true",
+            "reason": "'CARTAO_FREQUENTE'",
+            "pixSequence": "",
+            "atypicalNew": "",
+            "regionNew": ""
+          },
+          {
+            "_id": "pixSequence",
+            "pixSequence": "true",
+            "reason": "'PIX_FRACIONADO'",
+            "cardFrequency": "",
+            "atypicalNew": "",
+            "regionNew": ""
+          },
+          {
+            "_id": "atypicalNew",
+            "atypicalNew": "true",
+            "reason": "'VALOR_ATIPICO'",
+            "cardFrequency": "",
+            "pixSequence": "",
+            "regionNew": ""
+          },
+          {
+            "_id": "regionNew",
+            "regionNew": "true",
+            "reason": "'REGIAO_E_DESTINO'",
+            "cardFrequency": "",
+            "pixSequence": "",
+            "atypicalNew": ""
+          },
+          {
+            "_id": "usual",
+            "reason": "'OK'",
+            "cardFrequency": "",
+            "pixSequence": "",
+            "atypicalNew": "",
+            "regionNew": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "out",
+      "name": "Decisão",
+      "type": "outputNode",
+      "position": {
+        "x": 500,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "a",
+      "type": "edge",
+      "sourceId": "in",
+      "targetId": "risk"
+    },
+    {
+      "id": "b",
+      "type": "edge",
+      "sourceId": "risk",
+      "targetId": "out"
+    }
+  ]
+}
