@@ -42,10 +42,7 @@ async function refresh(){
  const stats=model.stats[0];
  $("metrics").innerHTML=[["Operações",stats.total],["Autorizadas",stats.approved],["Em análise",stats.review],["Rejeitadas",stats.denied]].map(([k,v])=>'<div>'+k+'<strong>'+v+'</strong></div>').join("");
  $("accounts").innerHTML=model.accounts.map(a=>'<div class="acct"><b>'+esc(a.id)+'</b><div>'+money(a.balance-a.reserved)+' <span>disponíveis'+(a.reserved?' · '+money(a.reserved)+' reservados':'')+'</span></div></div>').join("");
- $("history").innerHTML=model.operations.map(o=>'<tr><td>'+clock(o.created)+'</td><td>'+esc(o.client)+'</td><td>'+esc(o.product.toUpperCase())+'</td><td>'+money(o.amount)+'</td><td>'+pill(o.state)+'</td><td><button class="secondary" data-id="'+esc(o.id)+'">Detalhes</button></td></tr>').join("")||'<tr><td colspan="6">Execute um cenário para iniciar o histórico.</td></tr>';
- $("health").textContent="Decisão p95: "+model.p95.toFixed(2)+" ms · Eventos na fila: "+model.queue[0].pending+" · Erros internos desde o início: "+model.errors;
- $("siem").textContent=model.settings[0].enabled?"Pausar entrega ao SIEM":"Retomar entrega ao SIEM";
- $("events").innerHTML=model.events.map(e=>'<article><span>'+esc(e.kind)+' · '+esc(reasons[e.detail]||e.detail)+'</span><small>'+clock(e.created)+'</small></article>').join("")||"Nenhum evento entregue.";
+ renderViews(model);
  }catch(e){$("connection").textContent="Falha de conexão · "+e.message}
 }
 async function send(retry){
@@ -71,10 +68,15 @@ async function inspect(id){
  $("resolve").hidden=r.State!=="EM_RECONCILIACAO";$("dispute").hidden=!!ticket;
  if(!$("detail").open)$("detail").showModal();
 }
-$("history").onclick=async e=>{if(e.target.dataset.id){$("detailStatus").textContent="";$("note").value="";try{await inspect(e.target.dataset.id)}catch(err){$("status").textContent=err.message}}};
+document.querySelector("main").addEventListener("click",async e=>{
+ const button=e.target.closest("button[data-id]");
+ if(!button)return;
+ $("view-error").textContent="";$("detailStatus").textContent="";$("note").value="";
+ try{await inspect(button.dataset.id)}catch(err){$("view-error").textContent=err.message}
+});
 $("close").onclick=()=>$("detail").close();
 $("resolve").onclick=async()=>{try{const r=await api("/transacoes/"+selected+"/reconciliar",{});showResult(r);await refresh();await inspect(selected)}catch(e){$("detailStatus").textContent=e.message}};
 $("dispute").onsubmit=async e=>{e.preventDefault();try{const d=await api("/transacoes/"+selected+"/contestar",{note:$("note").value});$("detailStatus").textContent="Protocolo "+d.protocol;await refresh();await inspect(selected)}catch(err){$("detailStatus").textContent=err.message}};
 $("siem").onclick=async()=>{try{await api("/api/siem",{enabled:!model.settings[0].enabled});await refresh()}catch(e){$("health").textContent=e.message}};
-$("policy").onclick=async()=>{try{await api("/api/politica",{})}catch(e){$("health").textContent=e.message;$("policy").textContent=e.message}};
-refresh();setInterval(refresh,2500);
+$("policy").onclick=async()=>{try{await api("/api/politica",{})}catch(e){$("policy-feedback").textContent=e.message}};
+initViews();refresh();setInterval(refresh,2500);

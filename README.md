@@ -4,6 +4,18 @@ Sistema acadêmico de prevenção a fraudes em cartões e transferências fictí
 
 **Equipe:** Luiz Eduardo, Gabriel Martiniano, Guilherme e Paulo Renato. **Disciplina:** Paradigmas de Programação. [Repositório da equipe](https://github.com/BaianoZueiro/Projeto-Bancario).
 
+## Telas da central antifraude
+
+| Tela | O que demonstrar |
+|---|---|
+| Simulador | Escolher um cenário, executar a operação e comparar decisão, saldo disponível e reserva. |
+| Auditoria | Filtrar as últimas 60 operações por decisão ou buscar ID, cliente e destino. Em **Detalhes**, consultar evidências, reconciliar ou abrir contestação. |
+| NOC | Acompanhar latência p95, erros e fila. Pausar a entrega ao SIEM e observar a retomada. |
+| SOC | Filtrar os eventos entregues por risco, acesso negado ou contestação. Testar a permissão de política e abrir as operações associadas aos eventos. |
+| Contestações | Consultar protocolos, ler o relato registrado e voltar aos detalhes da operação de origem. |
+
+A navegação preserva o formulário e aceita Voltar/Avançar do navegador. Veja o [relatório técnico ilustrado em PDF](output/pdf/Finslet_Relatorio_do_Projeto.pdf) para acompanhar o fluxo, o código e os resultados dos testes.
+
 ## Executar para a apresentação
 
 **No computador preparado da equipe**, abra `Iniciar.cmd` ou execute `.\Iniciar.cmd` no terminal do VS Code. O navegador abre o [painel local](http://127.0.0.1:8090). O inicializador usa Go, OPA e o interpretador Python com a biblioteca ZEN instalados localmente. O histórico fica em `.data/finslet.db` (SQLite). As portas locais são 8090 para a API, 8181 para OPA e 8182 para ZEN. Se a aplicação já estiver ativa, o atalho abre o painel existente.
@@ -69,6 +81,7 @@ flowchart LR
 | [service.py](policy/service.py) | Carrega o grafo no ZEN e oferece o endpoint interno `/evaluate` usado pelo Go. |
 | [schema.sql](schema.sql) | Define os clientes, operações, lançamentos, recibos, eventos, contestações e controle de entrega. As chaves primárias impedem repetir um pedido ou lançar duas vezes na mesma conta para a mesma operação. |
 | [index.html](web/index.html), [style.css](web/style.css) e [app.js](web/app.js) | O HTML organiza simulador, auditoria e monitoramento. O CSS adapta o painel ao tamanho da tela. O JavaScript monta os cenários, gera a chave, conserva o pedido para reenvio e atualiza o painel a cada 2,5 segundos. |
+| [screens.js](web/screens.js) | Controla a navegação, os filtros da auditoria e do SOC, os indicadores do NOC e a lista de protocolos. |
 | [store_test.go](store_test.go) e [integration_test.go](integration_test.go) | Exercitam rollback, precedência, falhas, contestações, retomada após reinício, classificação e carga. Os testes de banco criam dados isolados da demonstração. |
 | [Iniciar.cmd](Iniciar.cmd) e [Iniciar.ps1](Iniciar.ps1) | Abrem o projeto no Windows, verificam a prontidão dos motores e compilam a API antes da demonstração. |
 | [compose.yaml](compose.yaml), [Dockerfile](Dockerfile) e [policy/Dockerfile](policy/Dockerfile) | Definem os quatro serviços da versão PostgreSQL e as imagens da API e do adaptador ZEN. [go.mod](go.mod) e [go.sum](go.sum) registram as dependências Go e suas verificações de integridade. |
